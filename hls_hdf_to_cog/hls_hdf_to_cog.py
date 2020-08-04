@@ -35,7 +35,7 @@ from rio_cogeo.cogeo import cog_translate, cog_validate
 from rio_cogeo.profiles import cog_profiles
 
 
-S2_BAND_NAMES = (
+S30_BAND_NAMES = (
     "B01",
     "B02",
     "B03",
@@ -53,6 +53,21 @@ S2_BAND_NAMES = (
     "Fmask",
 )
 
+L30_BAND_NAMES = (
+    "band01",
+    "band02",
+    "band03",
+    "band04",
+    "band05",
+    "band06",
+    "band07",
+    "band09",
+    "band10",
+    "band11",
+    "ACmask",
+    "Fmask",
+)
+
 
 @click.command()
 @options.file_in_arg
@@ -60,6 +75,12 @@ S2_BAND_NAMES = (
     "--output-dir",
     type=click.Path(dir_okay=True, file_okay=False, writable=True),
     required=True,
+)
+@click.option(
+    "--product",
+    type=click.Choice(["S30", "L30"]),
+    required=True,
+    help="S30 or L30",
 )
 @click.option(
     "--cog-profile",
@@ -76,7 +97,7 @@ S2_BAND_NAMES = (
     help="Overwrite internal tile size (default is set to 256).",
 )
 @options.creation_options
-def main(input, output_dir, cogeo_profile, blocksize, creation_options):
+def main(input, output_dir, product, cogeo_profile, blocksize, creation_options):
     """Translate a file to a COG."""
     assert input.endswith(".hdf")
 
@@ -93,13 +114,17 @@ def main(input, output_dir, cogeo_profile, blocksize, creation_options):
     config = dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128")
 
     bname = os.path.splitext(os.path.basename(input))[0]
+    if product == "S30":
+        band_names = S30_BAND_NAMES
+    if product == "L30":
+        band_names = L30_BAND_NAMES
     with rasterio.open(input) as src_dst:
 
-        assert len(src_dst.subdatasets) == len(S2_BAND_NAMES)
+        assert len(src_dst.subdatasets) == len(band_names)
 
         for sds in src_dst.subdatasets:
             band = sds.split(":")[-1]
-            assert band in S2_BAND_NAMES
+            assert band in band_names
 
             fname = "{}.{}.tif".format(bname, band)
             output_name = os.path.join(output_dir, fname)
