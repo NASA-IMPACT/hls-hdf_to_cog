@@ -54,16 +54,16 @@ S30_BAND_NAMES = (
 )
 
 L30_BAND_NAMES = (
-    "band01",
-    "band02",
-    "band03",
-    "band04",
-    "band05",
-    "band06",
-    "band07",
-    "band09",
-    "band10",
-    "band11",
+    "B01",
+    "B02",
+    "B03",
+    "B04",
+    "B05",
+    "B06",
+    "B07",
+    "B09",
+    "B10",
+    "B11",
     "ACmask",
     "Fmask",
 )
