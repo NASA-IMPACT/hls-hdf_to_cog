@@ -10,8 +10,8 @@ RUN apt-get install python3-pip python3-venv git -y
 RUN pip3 install rasterio==1.1.3 --no-binary rasterio
 RUN pip3 install tox tox-venv
 
+RUN git clone https://github.com/NASA-IMPACT/hls-testing_data
 COPY ./ ./hls_hdf_to_cog
-RUN git clone https://github.com/NASA-IMPACT/hls-testing_data /hls_hdf_to_cog/tests/data
 
 ENTRYPOINT ["/bin/sh", "-c"]
 CMD ["cd hls_hdf_to_cog && tox -r"]
