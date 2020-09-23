@@ -53,6 +53,13 @@ S30_BAND_NAMES = (
     "Fmask",
 )
 
+S30_ANGLE_BAND_NAMES = {
+    "solar_zenith": "SZA",
+    "solar_angle": "SAA",
+    "view_zenith": "VZA",
+    "view_angle": "VAA",
+}
+
 L30_BAND_NAMES = (
     "B01",
     "B02",
@@ -78,7 +85,7 @@ L30_BAND_NAMES = (
 )
 @click.option(
     "--product",
-    type=click.Choice(["S30", "L30"]),
+    type=click.Choice(["S30", "L30", "S30_ANGLES"]),
     required=True,
     help="S30 or L30",
 )
@@ -113,20 +120,29 @@ def main(input, output_dir, product, cogeo_profile, blocksize, creation_options)
 
     config = dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128")
 
-    bname = os.path.splitext(os.path.basename(input))[0]
     if product == "S30":
         band_names = S30_BAND_NAMES
+        bname = os.path.splitext(os.path.basename(input))[0]
     if product == "L30":
         band_names = L30_BAND_NAMES
-    with rasterio.open(input) as src_dst:
+        bname = os.path.splitext(os.path.basename(input))[0]
+    if product == "S30_ANGLES":
+        band_names = S30_ANGLE_BAND_NAMES
+        name = os.path.splitext(os.path.basename(input))[0]
+        # Remove ANGLE suffix from basename
+        bname = name.rsplit(".", 1)[0]
 
+    with rasterio.open(input) as src_dst:
         assert len(src_dst.subdatasets) == len(band_names)
 
         for sds in src_dst.subdatasets:
             band = sds.split(":")[-1]
             assert band in band_names
+            try:
+                fname = "{}.{}.tif".format(bname, band_names[band])
+            except TypeError:
+                fname = "{}.{}.tif".format(bname, band)
 
-            fname = "{}.{}.tif".format(bname, band)
             output_name = os.path.join(output_dir, fname)
 
             with rasterio.open(sds) as sub_dst:

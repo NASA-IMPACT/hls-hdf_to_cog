@@ -26,3 +26,13 @@ def test_hls_hdf_to_cog_L30():
                                   "--product", "L30"])
     print(result.exception)
     assert result.exit_code == 0
+
+
+def test_hls_hdf_to_cog_S30_Angle():
+    granule_basename = "HLS.S30.T35JMG.2020192T074619.v1.5.ANGLE{}"
+    inputfile = os.path.join(data_dir, granule_basename.format(".hdf"))
+    runner = CliRunner(echo_stdin=True)
+    result = runner.invoke(main, [inputfile, "--output-dir", test_dir,
+                                  "--product", "S30_ANGLES"])
+    print(result.exception)
+    assert result.exit_code == 0
