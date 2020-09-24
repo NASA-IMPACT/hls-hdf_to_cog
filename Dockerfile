@@ -6,7 +6,6 @@ ENV LANG=C.UTF-8
 
 RUN apt-get update
 RUN apt-get install python3-pip python3-venv git -y
-
 RUN pip3 install rasterio==1.1.3 --no-binary rasterio
 RUN pip3 install tox tox-venv
 
