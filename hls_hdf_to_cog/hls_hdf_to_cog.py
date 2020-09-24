@@ -22,7 +22,6 @@ Example:
 $ python -m hdf_to_cog HLS.S30.T52SCG.2019253.v1.5.hdf --output-dir my-dir
 or
 $ python hdf_to_cog.py HLS.S30.T52SCG.2019253.v1.5.hdf --output-dir my-dir
-
 """
 
 import os
@@ -55,9 +54,9 @@ S30_BAND_NAMES = (
 
 S30_ANGLE_BAND_NAMES = {
     "solar_zenith": "SZA",
-    "solar_angle": "SAA",
+    "solar_azimuth": "SAA",
     "view_zenith": "VZA",
-    "view_angle": "VAA",
+    "view_azimuth": "VAA",
 }
 
 L30_BAND_NAMES = (
