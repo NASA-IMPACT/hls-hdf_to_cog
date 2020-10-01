@@ -48,7 +48,6 @@ S30_BAND_NAMES = (
     "B11",
     "B12",
     "B8A",
-    "ACmask",
     "Fmask",
 )
 
@@ -70,7 +69,6 @@ L30_BAND_NAMES = (
     "B09",
     "B10",
     "B11",
-    "ACmask",
     "Fmask",
 )
 
@@ -132,30 +130,28 @@ def main(input, output_dir, product, cogeo_profile, blocksize, creation_options)
         bname = name.rsplit(".", 1)[0]
 
     with rasterio.open(input) as src_dst:
-        assert len(src_dst.subdatasets) == len(band_names)
-
         for sds in src_dst.subdatasets:
             band = sds.split(":")[-1]
-            assert band in band_names
-            try:
-                fname = "{}.{}.tif".format(bname, band_names[band])
-            except TypeError:
-                fname = "{}.{}.tif".format(bname, band)
+            if band in band_names:
+                try:
+                    fname = "{}.{}.tif".format(bname, band_names[band])
+                except TypeError:
+                    fname = "{}.{}.tif".format(bname, band)
 
-            output_name = os.path.join(output_dir, fname)
+                output_name = os.path.join(output_dir, fname)
 
-            with rasterio.open(sds) as sub_dst:
-                cog_translate(
-                    sub_dst,
-                    output_name,
-                    output_profile,
-                    config=config,
-                    forward_band_tags=True,
-                    overview_resampling="nearest",
-                    quiet=True,
-                )
+                with rasterio.open(sds) as sub_dst:
+                    cog_translate(
+                        sub_dst,
+                        output_name,
+                        output_profile,
+                        config=config,
+                        forward_band_tags=True,
+                        overview_resampling="nearest",
+                        quiet=True,
+                    )
 
-            assert cog_validate(output_name)
+                assert cog_validate(output_name)
 
 
 if __name__ == "__main__":
