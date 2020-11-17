@@ -51,7 +51,7 @@ S30_BAND_NAMES = (
     "Fmask",
 )
 
-S30_ANGLE_BAND_NAMES = {
+ANGLE_BAND_NAMES = {
     "solar_zenith": "SZA",
     "solar_azimuth": "SAA",
     "view_zenith": "VZA",
@@ -82,7 +82,7 @@ L30_BAND_NAMES = (
 )
 @click.option(
     "--product",
-    type=click.Choice(["S30", "L30", "S30_ANGLES"]),
+    type=click.Choice(["S30", "L30", "S30_ANGLES", "L30_ANGLES"]),
     required=True,
     help="S30 or L30",
 )
@@ -123,8 +123,8 @@ def main(input, output_dir, product, cogeo_profile, blocksize, creation_options)
     if product == "L30":
         band_names = L30_BAND_NAMES
         bname = os.path.splitext(os.path.basename(input))[0]
-    if product == "S30_ANGLES":
-        band_names = S30_ANGLE_BAND_NAMES
+    if product == "S30_ANGLES" or product == "L30_ANGLES":
+        band_names = ANGLE_BAND_NAMES
         name = os.path.splitext(os.path.basename(input))[0]
         # Remove ANGLE suffix from basename
         bname = name.rsplit(".", 1)[0]
