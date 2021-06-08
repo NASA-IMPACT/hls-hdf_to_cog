@@ -140,7 +140,6 @@ def main(input, output_dir, product, cogeo_profile, blocksize, creation_options)
 
                 output_name = os.path.join(output_dir, fname)
 
-                print(sds)
                 with rasterio.open(sds) as sub_dst:
                     cog_translate(
                         sub_dst,
