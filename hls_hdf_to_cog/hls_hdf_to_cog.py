@@ -32,7 +32,7 @@ import rasterio
 from rasterio.rio import options
 from rio_cogeo.cogeo import cog_translate, cog_validate
 from rio_cogeo.profiles import cog_profiles
-
+from rasterio.dtypes import _gdal_typename
 
 S30_BAND_NAMES = (
     "B01",
@@ -141,15 +141,43 @@ def main(input, output_dir, product, cogeo_profile, blocksize, creation_options)
                 output_name = os.path.join(output_dir, fname)
 
                 with rasterio.open(sds) as sub_dst:
-                    cog_translate(
-                        sub_dst,
-                        output_name,
-                        output_profile,
-                        config=config,
-                        forward_band_tags=True,
-                        overview_resampling="nearest",
-                        quiet=True,
-                    )
+                    # add the datum to the CRS
+                    # TODO: add a test
+                    new_crs = sub_dst.crs.to_proj4() + " +datum=WGS84"
+
+                    # We create a InMemory dataset using `GDAL MEM driver`
+                    # ref: https://github.com/rasterio/rasterio/blob/master/rasterio/_io.pyx#L1946-L1955
+                    data = sub_dst.read()
+                    info = {
+                        "DATAPOINTER": data.__array_interface__["data"][0],
+                        "PIXELS": sub_dst.width,
+                        "LINES": sub_dst.height,
+                        "BANDS": sub_dst.count,
+                        "DATATYPE": _gdal_typename(data.dtype.name),
+                    }
+                    dataset_options = ",".join(f"{name}={val}" for name, val in info.items())
+                    datasetname = f"MEM:::{dataset_options}"
+                    with rasterio.open(datasetname, "r+") as src:
+                        src.nodata = sub_dst.nodata  # set nodata
+                        src.crs = new_crs  # set CRS
+                        src.transform = sub_dst.transform  # add geotransform
+                        # set Metadata
+                        src.update_tags(**sub_dst.tags())
+                        src.colorinterp = sub_dst.colorinterp
+                        for i, b in enumerate(sub_dst.indexes):
+                            src.set_band_description(i + 1, sub_dst.descriptions[b - 1])
+                            src.update_tags(i + 1, **sub_dst.tags(b))
+
+                        # Create COG from the `Mem` dataset
+                        cog_translate(
+                            src,
+                            output_name,
+                            output_profile,
+                            config=config,
+                            forward_band_tags=True,
+                            overview_resampling="nearest",
+                            quiet=True,
+                        )
 
                 assert cog_validate(output_name)
 
