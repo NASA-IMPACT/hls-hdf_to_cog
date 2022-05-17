@@ -3,7 +3,7 @@ name: build_tox_tests
 on: [push]
 
 jobs:
-  build_push_to_ecr:
+  tox_in_docker:
     runs-on: ubuntu-latest
 
     steps:
