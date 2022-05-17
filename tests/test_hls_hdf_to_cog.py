@@ -1,4 +1,5 @@
 import os
+import rasterio
 from click.testing import CliRunner
 from hls_hdf_to_cog.hls_hdf_to_cog import main
 
@@ -6,6 +7,7 @@ from hls_hdf_to_cog.hls_hdf_to_cog import main
 current_dir = os.path.dirname(__file__)
 test_dir = os.path.join(current_dir, "data")
 data_dir = "/hls-testing_data"
+datum_string = 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84"'
 
 
 def test_hls_hdf_to_cog_S30():
@@ -16,6 +18,9 @@ def test_hls_hdf_to_cog_S30():
                                   "--product", "S30"])
     print(result.exception)
     assert result.exit_code == 0
+    outputfile = os.path.join(test_dir, granule_basename.format(".B01.tif"))
+    with rasterio.open(outputfile, "r") as src:
+        assert datum_string in src.crs.to_wkt()
 
 
 def test_hls_hdf_to_cog_L30():
@@ -24,8 +29,11 @@ def test_hls_hdf_to_cog_L30():
     runner = CliRunner()
     result = runner.invoke(main, [inputfile, "--output-dir", test_dir,
                                   "--product", "L30"])
-    print(result.exception)
     assert result.exit_code == 0
+    print(result.exception)
+    outputfile = os.path.join(test_dir, granule_basename.format(".B01.tif"))
+    with rasterio.open(outputfile, "r") as src:
+        assert datum_string in src.crs.to_wkt()
 
 
 def test_hls_hdf_to_cog_S30_Angle():
@@ -36,3 +44,6 @@ def test_hls_hdf_to_cog_S30_Angle():
                                   "--product", "S30_ANGLES"])
     print(result.exception)
     assert result.exit_code == 0
+    outputfile = os.path.join(test_dir, "HLS.S30.T35JMG.2020192T074619.v1.5.SAA.tif")
+    with rasterio.open(outputfile, "r") as src:
+        assert datum_string in src.crs.to_wkt()
