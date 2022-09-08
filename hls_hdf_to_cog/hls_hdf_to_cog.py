@@ -100,8 +100,13 @@ L30_BAND_NAMES = (
     default=256,
     help="Overwrite internal tile size (default is set to 256).",
 )
+@click.option(
+    "--debug-mode",
+    is_flag=True,
+    help="Write arbitrary band names for debugging intermediate hdfs."
+)
 @options.creation_options
-def main(input, output_dir, product, cogeo_profile, blocksize, creation_options):
+def main(input, output_dir, product, cogeo_profile, blocksize, debug_mode, creation_options,):
     """Translate a file to a COG."""
     assert input.endswith(".hdf")
 
@@ -132,7 +137,7 @@ def main(input, output_dir, product, cogeo_profile, blocksize, creation_options)
     with rasterio.open(input) as src_dst:
         for sds in src_dst.subdatasets:
             band = sds.split(":")[-1]
-            if band in band_names:
+            if (band in band_names) or debug_mode:
                 try:
                     fname = "{}.{}.tif".format(bname, band_names[band])
                 except TypeError:
@@ -143,7 +148,15 @@ def main(input, output_dir, product, cogeo_profile, blocksize, creation_options)
                 with rasterio.open(sds) as sub_dst:
                     # add the datum to the CRS
                     # TODO: add a test
-                    new_crs = sub_dst.crs.to_proj4() + " +datum=WGS84"
+                    if debug_mode:
+                        metadata = src_dst.tags()
+                        new_crs = rasterio.crs.CRS.from_string(metadata["HORIZONTAL_CS_CODE"])
+                        transform = rasterio.transform.from_origin(
+                            float(metadata["ULX"]), float(metadata["ULY"]), 30, 30
+                        )
+                    else:
+                        new_crs = sub_dst.crs.to_proj4() + " +datum=WGS84"
+                        transform = sub_dst.transform
 
                     # We create a InMemory dataset using `GDAL MEM driver`
                     # ref: https://github.com/rasterio/rasterio/blob/master/rasterio/_io.pyx#L1946-L1955
@@ -160,7 +173,7 @@ def main(input, output_dir, product, cogeo_profile, blocksize, creation_options)
                     with rasterio.open(datasetname, "r+") as src:
                         src.nodata = sub_dst.nodata  # set nodata
                         src.crs = new_crs  # set CRS
-                        src.transform = sub_dst.transform  # add geotransform
+                        src.transform = transform  # add geotransform
                         # set Metadata
                         src.update_tags(**sub_dst.tags())
                         src.colorinterp = sub_dst.colorinterp

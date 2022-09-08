@@ -47,3 +47,16 @@ def test_hls_hdf_to_cog_S30_Angle():
     outputfile = os.path.join(test_dir, "HLS.S30.T35JMG.2020192T074619.v1.5.SAA.tif")
     with rasterio.open(outputfile, "r") as src:
         assert datum_string in src.crs.to_wkt()
+
+
+def test_hls_hdf_to_cog_S30_debug():
+    granule_basename = "resample30m{}"
+    inputfile = os.path.join(data_dir, granule_basename.format(".hdf"))
+    runner = CliRunner(echo_stdin=True)
+    result = runner.invoke(main, [inputfile, "--output-dir", test_dir,
+                                  "--product", "S30", "--debug-mode"])
+    print(result.exception)
+    assert result.exit_code == 0
+    outputfile = os.path.join(test_dir, "resample30m.2.tif")
+    with rasterio.open(outputfile, "r") as src:
+        assert datum_string in src.crs.to_wkt()
