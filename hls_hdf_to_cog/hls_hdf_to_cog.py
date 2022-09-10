@@ -176,6 +176,8 @@ def main(input, output_dir, product, cogeo_profile, blocksize, debug_mode, creat
                         src.transform = transform  # add geotransform
                         # set Metadata
                         src.update_tags(**sub_dst.tags())
+                        src._set_all_scales(sub_dst.scales)
+                        src._set_all_offsets(sub_dst.offsets)
                         src.colorinterp = sub_dst.colorinterp
                         for i, b in enumerate(sub_dst.indexes):
                             src.set_band_description(i + 1, sub_dst.descriptions[b - 1])
