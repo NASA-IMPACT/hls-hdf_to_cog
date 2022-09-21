@@ -150,7 +150,13 @@ def main(input, output_dir, product, cogeo_profile, blocksize, debug_mode, creat
                     # TODO: add a test
                     if debug_mode:
                         metadata = src_dst.tags()
-                        new_crs = rasterio.crs.CRS.from_string(metadata["HORIZONTAL_CS_CODE"])
+                        if metadata.get("HORIZONTAL_CS_CODE") is None:
+                            crs_string = metadata.get("HORIZONTAL_CS_NAME")
+                            zone = crs_string.split(" ")[-1]
+                            new_crs = rasterio.crs.CRS.from_dict({"proj": "utm", "zone": zone})
+                        else:
+                            new_crs = rasterio.crs.CRS.from_string(metadata["HORIZONTAL_CS_CODE"])
+
                         transform = rasterio.transform.from_origin(
                             float(metadata["ULX"]), float(metadata["ULY"]), 30, 30
                         )

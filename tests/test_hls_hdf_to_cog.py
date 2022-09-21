@@ -60,3 +60,16 @@ def test_hls_hdf_to_cog_S30_debug():
     outputfile = os.path.join(test_dir, "resample30m.2.tif")
     with rasterio.open(outputfile, "r") as src:
         assert datum_string in src.crs.to_wkt()
+
+
+def test_hls_hdf_to_cog_L30_debug():
+    granule_basename = "gridded{}"
+    inputfile = os.path.join(data_dir, granule_basename.format(".hdf"))
+    runner = CliRunner(echo_stdin=True)
+    result = runner.invoke(main, [inputfile, "--output-dir", test_dir,
+                                  "--product", "L30", "--debug-mode"])
+    print(result.exception)
+    assert result.exit_code == 0
+    outputfile = os.path.join(test_dir, "gridded.2.tif")
+    with rasterio.open(outputfile, "r") as src:
+        assert datum_string in src.crs.to_wkt()
