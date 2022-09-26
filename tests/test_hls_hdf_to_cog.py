@@ -57,7 +57,7 @@ def test_hls_hdf_to_cog_S30_debug():
                                   "--product", "S30", "--debug-mode"])
     print(result.exception)
     assert result.exit_code == 0
-    outputfile = os.path.join(test_dir, "resample30m.2.tif")
+    outputfile = os.path.join(test_dir, "resample30m.B02.tif")
     with rasterio.open(outputfile, "r") as src:
         assert datum_string in src.crs.to_wkt()
 
@@ -70,6 +70,6 @@ def test_hls_hdf_to_cog_L30_debug():
                                   "--product", "L30", "--debug-mode"])
     print(result.exception)
     assert result.exit_code == 0
-    outputfile = os.path.join(test_dir, "gridded.2.tif")
+    outputfile = os.path.join(test_dir, "gridded.B02.tif")
     with rasterio.open(outputfile, "r") as src:
         assert datum_string in src.crs.to_wkt()

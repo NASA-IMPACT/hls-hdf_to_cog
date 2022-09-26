@@ -137,6 +137,12 @@ def main(input, output_dir, product, cogeo_profile, blocksize, debug_mode, creat
     with rasterio.open(input) as src_dst:
         for sds in src_dst.subdatasets:
             band = sds.split(":")[-1]
+            if debug_mode:
+                index = int(band)
+                try:
+                    band = band_names[index]
+                except IndexError:
+                    band = "invalid"
             if (band in band_names) or debug_mode:
                 try:
                     fname = "{}.{}.tif".format(bname, band_names[band])
