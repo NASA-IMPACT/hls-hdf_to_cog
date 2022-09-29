@@ -43,11 +43,29 @@ S30_BAND_NAMES = (
     "B06",
     "B07",
     "B08",
+    "B8A",
     "B09",
     "B10",
     "B11",
     "B12",
+    "Fmask",
+)
+
+S30_DEBUG_BAND_NAMES = (
+    "B01",
+    "B02",
+    "B03",
+    "B04",
+    "B05",
+    "B06",
+    "B07",
+    "B08",
     "B8A",
+    "B09",
+    "B10",
+    "B11",
+    "B12",
+    "ACmask",
     "Fmask",
 )
 
@@ -69,6 +87,21 @@ L30_BAND_NAMES = (
     "B09",
     "B10",
     "B11",
+    "Fmask",
+)
+
+L30_DEBUG_BAND_NAMES = (
+    "B01",
+    "B02",
+    "B03",
+    "B04",
+    "B05",
+    "B06",
+    "B07",
+    "B09",
+    "B10",
+    "B11",
+    "ACmask",
     "Fmask",
 )
 
@@ -123,10 +156,16 @@ def main(input, output_dir, product, cogeo_profile, blocksize, debug_mode, creat
     config = dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128")
 
     if product == "S30":
-        band_names = S30_BAND_NAMES
+        if debug_mode:
+            band_names = S30_DEBUG_BAND_NAMES
+        else:
+            band_names = S30_BAND_NAMES
         bname = os.path.splitext(os.path.basename(input))[0]
     if product == "L30":
-        band_names = L30_BAND_NAMES
+        if debug_mode:
+            band_names = L30_DEBUG_BAND_NAMES
+        else:
+            band_names = L30_BAND_NAMES
         bname = os.path.splitext(os.path.basename(input))[0]
     if product == "S30_ANGLES" or product == "L30_ANGLES":
         band_names = ANGLE_BAND_NAMES
