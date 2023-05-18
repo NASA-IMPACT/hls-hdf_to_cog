@@ -48,7 +48,7 @@ S30_BAND_NAMES = (
     "B10",
     "B11",
     "B12",
-    "Fmask",
+    "QA",
 )
 
 S30_DEBUG_BAND_NAMES = (
@@ -66,7 +66,7 @@ S30_DEBUG_BAND_NAMES = (
     "B11",
     "B12",
     "ACmask",
-    "Fmask",
+    "QA",
 )
 
 ANGLE_BAND_NAMES = {
