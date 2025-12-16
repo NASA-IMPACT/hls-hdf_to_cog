@@ -6,6 +6,6 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=["click", "rio-cogeo", ],
-    extras_require={"dev": ["flake8", "black"], "test": ["flake8", "pytest"]},
+    extras_require={"dev": ["flake8", "black"], "test": ["tox", "flake8", "pytest"]},
     entry_points={"console_scripts": ["hdf_to_cog=hls_hdf_to_cog.hls_hdf_to_cog:main", ]},
 )

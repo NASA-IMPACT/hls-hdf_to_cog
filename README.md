@@ -18,10 +18,21 @@ Install for local testing
 pip install -e .["test"]
 ```
 
-This will install both the hls_hdf_to_cog package as well as install a hdf_to_cog executable on your path.
+This will install both the `hls_hdf_to_cog` package as well as install a `hdf_to_cog` executable on your path.
 
 ### Tests
-Run Tests on Docker
+
+This repository uses `hls-testing_data` for tests. To begin, clone this repository locally in this folder:
+
 ```bash
-docker build -t hls_hdf_to_cog . && docker run hls_hdf_to_cog
+git clone https://github.com/NASA-IMPACT/hls-testing_data
 ```
+
+Run Tests on Docker
+
+```bash
+docker build -t hls_hdf_to_cog .
+docker run hls_hdf_to_cog
+```
+
+You can also use the script `scripts/test` to do all of these steps.

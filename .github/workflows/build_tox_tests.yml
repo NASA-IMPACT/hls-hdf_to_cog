@@ -8,10 +8,12 @@ jobs:
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - name: Build image
-        run: docker build . --tag hls_hdf_to_cog
+      - uses: actions/checkout@v4
+        with:
+          path: hls-testing_dat
+          repository: NASA-IMPACT/hls-testing_data
 
-      - name: Tox tests in container
-        run: docker run hls_hdf_to_cog
+      - name: Build container and run Tox tests in container
+        run: scripts/test
