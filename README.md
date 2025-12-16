@@ -28,11 +28,11 @@ This repository uses `hls-testing_data` for tests. To begin, clone this reposito
 git clone https://github.com/NASA-IMPACT/hls-testing_data
 ```
 
-Run Tests on Docker
+Run tests on Docker with the `hls-testing_data` volume mounted into the container,
 
 ```bash
 docker build -t hls_hdf_to_cog .
-docker run hls_hdf_to_cog
+docker run -v $(pwd)/hls-testing_data:/hls-testing_data hls_hdf_to_cog
 ```
 
 You can also use the script `scripts/test` to do all of these steps.
