@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e
+
+if [[ ! -d hls-testing_data ]]; then
+    echo "Cloning 'hls-testing_data' repository..."
+    git clone https://github.com/NASA-IMPACT/hls-testing_data
+fi
+
+docker build -t hls_hdf_to_cog .
+docker run \
+    -v "$(pwd)/hls-testing_data":/hls-testing_data \
+    -v "$(pwd)/hls_hdf_to_cog":/app/hls_hdf_to_cog \
+    hls_hdf_to_cog
